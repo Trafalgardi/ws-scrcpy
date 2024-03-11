@@ -2,7 +2,9 @@ import { TypedEmitter } from '../../common/TypedEmitter';
 import { ParamsBase } from '../../types/ParamsBase';
 import Util from '../Util';
 
-export class BaseClient<P extends ParamsBase, TE> extends TypedEmitter<TE> {
+export type EventMap = Record<string, any>;
+
+export class BaseClient<P extends ParamsBase, TE extends EventMap> extends TypedEmitter<TE> {
     protected title = 'BaseClient';
     protected params: P;
 

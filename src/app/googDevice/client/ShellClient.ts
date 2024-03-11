@@ -1,6 +1,7 @@
 import 'xterm/css/xterm.css';
 import { ManagerClient } from '../../client/ManagerClient';
 import { Terminal } from 'xterm';
+import { ITerminalDimensions } from 'xterm-addon-fit';
 import { AttachAddon } from 'xterm-addon-attach';
 import { FitAddon } from 'xterm-addon-fit';
 import { MessageXtermClient } from '../../../types/MessageXtermClient';
@@ -11,6 +12,7 @@ import { BaseDeviceTracker } from '../../client/BaseDeviceTracker';
 import Util from '../../Util';
 import { ParamsDeviceTracker } from '../../../types/ParamsDeviceTracker';
 import { ChannelCode } from '../../../common/ChannelCode';
+
 
 const TAG = '[ShellClient]';
 
@@ -74,7 +76,11 @@ export class ShellClient extends ManagerClient<ParamsShell, never> {
         if (!udid || !this.ws || this.ws.readyState !== this.ws.OPEN) {
             return;
         }
-        const { rows, cols } = this.fitAddon.proposeDimensions();
+        
+        const rowscolms : ITerminalDimensions | undefined = this.fitAddon.proposeDimensions();
+
+        const {cols, rows } = rowscolms as ITerminalDimensions;
+
         const message: MessageXtermClient = {
             id: 1,
             type: 'shell',
@@ -103,7 +109,12 @@ export class ShellClient extends ManagerClient<ParamsShell, never> {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const term: any = this.term;
         const terminalContainer: HTMLElement = ShellClient.getOrCreateContainer(this.escapedUdid);
-        const { rows, cols } = this.fitAddon.proposeDimensions();
+
+
+        const rowscolms : ITerminalDimensions | undefined = this.fitAddon.proposeDimensions();
+
+        const {cols, rows } = rowscolms as ITerminalDimensions;
+        
         const width =
             (cols * term._core._renderService.dimensions.actualCellWidth + term._core.viewport.scrollBarWidth).toFixed(
                 2,

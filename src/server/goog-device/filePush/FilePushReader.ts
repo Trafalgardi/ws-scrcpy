@@ -2,7 +2,7 @@ import { ReadableOptions } from 'stream';
 import { CommandControlMessage, FilePushState } from '../../../app/controlMessage/CommandControlMessage';
 import { FilePushResponseStatus } from '../../../app/googDevice/filePush/FilePushResponseStatus';
 import PushTransfer from '@dead50f7/adbkit/lib/adb/sync/pushtransfer';
-import { ReadStream } from './ReadStream';
+import { ReadStream } from 'fs';
 import { AdbExtended } from '../adb';
 
 enum State {
@@ -188,7 +188,7 @@ export class FilePushReader {
                 this.sendResponse(FilePushResponseStatus.NO_ERROR);
             },
         } as ReadableOptions; // FIXME: incorrect type in @type/node@12. fixed in @type/node@16
-        this.readStream = new ReadStream(this.fileName, opts);
+        this.readStream = new ReadStream(opts);
         this.readStream.push(chunk);
         const client = AdbExtended.createClient();
         this.pushTransfer = await client.push(this.serial, this.readStream, this.fileName);

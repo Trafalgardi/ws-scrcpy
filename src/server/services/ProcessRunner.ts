@@ -56,7 +56,7 @@ export abstract class ProcessRunner<T extends ProcessRunnerEvents> extends Typed
         });
 
         this.proc.on('close', (code, signal) => {
-            this.emit('close', { code, signal });
+            this.emit2('close', { code, signal });
         });
     }
 

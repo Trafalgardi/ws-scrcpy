@@ -1,7 +1,7 @@
 import { TypedEmitter } from '../../common/TypedEmitter';
 import { Message } from './Message';
 import { MessageType } from './MessageType';
-import { EventClass } from './Event';
+import { Event2, EventClass } from './Event';
 import { CloseEventClass } from './CloseEventClass';
 import { ErrorEventClass } from './ErrorEventClass';
 import { MessageEventClass } from './MessageEventClass';
@@ -252,19 +252,56 @@ export class Multiplexer extends TypedEmitter<MultiplexerEvents> implements WebS
     }
 
     public send(data: string | ArrayBufferLike | Blob | ArrayBufferView): void {
+
+        console.log(data);
+        console.log(JSON.stringify(data));
+        
+        console.log(typeof(data));
+        
         if (this.ws instanceof Multiplexer) {
-            if (typeof data === 'string') {
-                data = Message.createBuffer(MessageType.RawStringData, this._id, Buffer.from(data));
-            } else {
-                data = Message.createBuffer(MessageType.RawBinaryData, this._id, Buffer.from(data));
-            }
+
+            data = Message.createBuffer(MessageType.RawStringData, this._id, Buffer.from(data as string));
+
+            // if (data === 'string') {
+            //     console.log("is stirngs \n");
+                
+            //     data = Message.createBuffer(MessageType.RawStringData, this._id, Buffer.from(data));
+
+            //     console.log("is stirngs end \n");
+            // }else{
+
+            //     console.log("nt stirngs \n");
+            //     // if (data instanceof Blob) {
+            //     //     const reader = new FileReader();
+            //     //     reader.onload = () => {
+            //     //         const buffer = reader.result as ArrayBuffer;
+            //     //         data = Message.createBuffer(MessageType.RawBinaryData, this._id, Buffer.from(buffer));
+            //     //         this._send(data);
+            //     //     };
+            //     //     reader.readAsArrayBuffer(data);
+            //     //     return;
+            //     // } else if (data instanceof ArrayBuffer) {
+            //     //     data = Message.createBuffer(MessageType.RawBinaryData, this._id, Buffer.from(new Uint8Array(data)));
+            //     // } else {
+            //     //     let view = data as ArrayBufferView;
+            //     //     data = Message.createBuffer(MessageType.RawBinaryData, this._id, Buffer.from(view.buffer));
+            //     // }
+            // }
+            // console.log("end if \n");
+            
+            
         }
         this._send(data);
     }
 
     public sendData(data: string | ArrayBufferLike | Blob | ArrayBufferView): void {
         if (this.ws instanceof Multiplexer) {
-            data = Message.createBuffer(MessageType.Data, this._id, Buffer.from(data));
+            if (data === 'string') {
+                data = Message.createBuffer(MessageType.Data, this._id, Buffer.from(data));
+            }else{
+                console.log("sendData need check");
+                
+            }
         }
         this._send(data);
     }
@@ -332,7 +369,7 @@ export class Multiplexer extends TypedEmitter<MultiplexerEvents> implements WebS
         return this.nextId;
     }
 
-    public dispatchEvent(event: Event): boolean {
+    public dispatchEvent(event: Event | Event2): boolean {
         if (event.type === 'close' && typeof this.onclose === 'function') {
             Reflect.apply(this.onclose, this, [event]);
         }
